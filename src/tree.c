@@ -519,8 +519,6 @@ static Con *get_tree_next(Con *con, direction_t direction) {
         if (con->fullscreen_mode == CF_OUTPUT) {
             /* We've reached a fullscreen container. Directional focus should
              * now operate on the workspace level. */
-            con = con_get_workspace(con);
-            break;
         } else if (con->fullscreen_mode == CF_GLOBAL) {
             /* Focus changes should happen only inside the children of a global
              * fullscreen container. */
@@ -551,7 +549,7 @@ static Con *get_tree_next(Con *con, direction_t direction) {
         if (con_num_children(parent) > 1 && con_orientation(parent) == orientation) {
             Con *const next = previous ? TAILQ_PREV(con, nodes_head, nodes)
                                        : TAILQ_NEXT(con, nodes);
-            if (next && con_fullscreen_permits_focusing(next)) {
+            if (next) {
                 return next;
             }
 
@@ -562,7 +560,7 @@ static Con *get_tree_next(Con *con, direction_t direction) {
                     break;
                 case FOCUS_WRAPPING_WORKSPACE:
                 case FOCUS_WRAPPING_ON:
-                    if (!first_wrap && con_fullscreen_permits_focusing(wrap)) {
+                    if (!first_wrap) {
                         first_wrap = wrap;
                     }
                     break;
@@ -595,6 +593,15 @@ handle_workspace:;
  */
 void tree_next(Con *con, direction_t direction) {
     Con *next = get_tree_next(con, direction);
+
+    bool moving_over_fullscreen = false;
+    if(!con_fullscreen_permits_focusing(next)){
+        moving_over_fullscreen = true;
+        // Doesn't seem to actually need to disable fullscreen, switch, then
+        // quickly enable. Just can set next to fullscreen
+        /* con_disable_fullscreen(con); */
+    }
+
     if (!next) {
         return;
     }
@@ -629,6 +636,9 @@ void tree_next(Con *con, direction_t direction) {
 
     workspace_show(con_get_workspace(next));
     con_activate(con_descend_focused(next));
+    if(moving_over_fullscreen){
+        con_enable_fullscreen(con_descend_focused(next), CF_OUTPUT);
+    }
 }
 
 /*
