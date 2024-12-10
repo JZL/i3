@@ -2367,7 +2367,7 @@ bool con_fullscreen_permits_focusing(Con *con) {
 
     /* Allow it only if the container to be focused is contained within the
      * current fullscreen container. */
-    return con_has_parent(con, fs);
+    return false;
 }
 
 /*
