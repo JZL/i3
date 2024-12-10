@@ -1211,12 +1211,14 @@ void con_toggle_fullscreen(Con *con, int fullscreen_mode) {
  *
  */
 static void con_set_fullscreen_mode(Con *con, fullscreen_mode_t fullscreen_mode) {
+    //Don't ask me how but this is doing all the real work
     con->fullscreen_mode = fullscreen_mode;
 
     DLOG("mode now: %d\n", con->fullscreen_mode);
 
     /* Send an ipc window "fullscreen_mode" event */
-    ipc_send_window_event("fullscreen_mode", con);
+    //I'm not sure it does anything, maybe more flickering
+    /* ipc_send_window_event("fullscreen_mode", con); */
 
     /* update _NET_WM_STATE if this container has a window */
     /* TODO: when a window is assigned to a container which is already
@@ -1227,10 +1229,12 @@ static void con_set_fullscreen_mode(Con *con, fullscreen_mode_t fullscreen_mode)
 
     if (con->fullscreen_mode != CF_NONE) {
         DLOG("Setting _NET_WM_STATE_FULLSCREEN for con = %p / window = %d.\n", con, con->window->id);
-        xcb_add_property_atom(conn, con->window->id, A__NET_WM_STATE, A__NET_WM_STATE_FULLSCREEN);
+        /* xcb_add_property_atom(conn, con->window->id, A__NET_WM_STATE, A__NET_WM_STATE_FULLSCREEN); */
+        /* xcb_add_property_atom(conn, con->window->id, A__NET_WM_STATE, A__NET_WM_STATE_MAXIMIZED_VERT); */
+        /* xcb_add_property_atom(conn, con->window->id, A__NET_WM_STATE, A__NET_WM_STATE_MAXIMIZED_HORZ); */
     } else {
-        DLOG("Removing _NET_WM_STATE_FULLSCREEN for con = %p / window = %d.\n", con, con->window->id);
-        xcb_remove_property_atom(conn, con->window->id, A__NET_WM_STATE, A__NET_WM_STATE_FULLSCREEN);
+        /* DLOG("Removing _NET_WM_STATE_FULLSCREEN for con = %p / window = %d.\n", con, con->window->id); */
+        /* xcb_remove_property_atom(conn, con->window->id, A__NET_WM_STATE, A__NET_WM_STATE_FULLSCREEN); */
     }
 }
 

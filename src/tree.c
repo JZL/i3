@@ -634,11 +634,14 @@ void tree_next(Con *con, direction_t direction) {
         }
     }
 
-    workspace_show(con_get_workspace(next));
-    con_activate(con_descend_focused(next));
+    Con *xx = con_descend_focused(next);
     if(moving_over_fullscreen){
-        con_enable_fullscreen(con_descend_focused(next), CF_OUTPUT);
+        con_enable_fullscreen(xx, CF_OUTPUT);
     }
+
+    workspace_show(con_get_workspace(next));
+    con_activate(xx);
+
 }
 
 /*
